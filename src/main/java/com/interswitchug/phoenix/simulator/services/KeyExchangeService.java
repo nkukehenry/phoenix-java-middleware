@@ -20,7 +20,7 @@ public class KeyExchangeService {
 		String publicKey = curveUtils.getPublicKey(pair);
 
 		KeyExchangeRequest request = new KeyExchangeRequest();
-		request.setTerminalId(Constants.MY_TERMINAL_ID);
+		request.setTerminalId(Constants.TERMINAL_ID);
 		request.setSerialId(Constants.MY_SERIAL_ID);
 		request.setRequestReference(java.util.UUID.randomUUID().toString());
 		request.setAppVersion(Constants.APP_VERSION);

@@ -6,20 +6,16 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class RegistrationService {
 
-	 private String baseUrl;
-	 private final String registrationEndpointUrl = baseUrl + "clientRegistration";
-	 private final String registrationCompletionEndpointUrl = baseUrl  + "completeClientRegistration";
+	 private final String registrationEndpointUrl = Constants.ROOT_LINK + "client/clientRegistration";
+	 private final String registrationCompletionEndpointUrl = Constants.ROOT_LINK   + "client/completeClientRegistration";
 
-	public RegistrationService() {
-
-		baseUrl   = Constants.ROOT_LINK + "client/";
-	}
 
 	/**
 	 * @return Map<String,String>
@@ -53,11 +49,15 @@ public class RegistrationService {
 	 */
 	 public String doRegistration(ClientRegistrationDetail registrationDetail) throws Exception {
 
-		 String privateKey = Constants.PRIKEY;
-		 String publicKey  = Constants.PUBKEY;
+	     String privateKey = Constants.PRIKEY;
+         String publicKey  = Constants.PUBKEY;
+
+		 System.out.println("privateKey IS: " + privateKey);
+		 System.out.println("publicKey IS: " + publicKey);
 
 		 System.out.println(" private key {} "+ privateKey);
 		 System.out.println(" public key  {} " + publicKey);
+		 System.out.println(" public key  {} " + registrationDetail);
 		
 		EllipticCurveUtils curveUtils = new EllipticCurveUtils("ECDH");
 		KeyPair keyPair = curveUtils.generateKeypair();
@@ -76,8 +76,8 @@ public class RegistrationService {
 
 			 //Registration was successful, extract needed values to continue to complete registration
 
-			   String decryptedSessionKey = CryptoUtils.decryptWithPrivate(registrationResponse.getResponse().getServerSessionPublicKey(),privateKey);
-			   String terminalKey = curveUtils.doECDH(curvePrivateKey,decryptedSessionKey);
+			 String decryptedSessionKey = CryptoUtils.decryptWithPrivate(registrationResponse.getResponse().getServerSessionPublicKey(),privateKey);
+			 String terminalKey = curveUtils.doECDH(curvePrivateKey,decryptedSessionKey);
 
 			 System.out.println("==============sessionKey/terminalKey==============");
 			 System.out.println("sessionKey: {} "+terminalKey);
@@ -114,14 +114,19 @@ public class RegistrationService {
 	 
 	 private String clientRegistrationRequest(String publicKey,String clientSessionPublicKey,String privateKey,ClientRegistrationDetail setup) throws Exception{
 
-		  setup.setSerialId(Constants.MY_SERIAL_ID);
+		 setup.setSerialId(Constants.MY_SERIAL_ID);
+		  setup.setTerminalId(Constants.TERMINAL_ID);
 		  setup.setPublicKey(publicKey);
 		  setup.setGprsCoordinate("");
 		  setup.setClientSessionPublicKey(clientSessionPublicKey);
-		  
+		  setup.setRequestReference(String.valueOf(new Date(System.currentTimeMillis())));
+
+		 System.out.println("Request: "+setup);
+
+
 		  Map<String,String> headers = AuthUtils.generateInterswitchAuth(Constants.POST_REQUEST, registrationEndpointUrl,"","","",privateKey);
 		  String json= JSONDataTransform.marshall(setup);
-
+		 System.out.println("Request json: "+json);
 		 return HttpUtil.postHTTPRequest( registrationEndpointUrl, headers, json);
 	  }
 	 

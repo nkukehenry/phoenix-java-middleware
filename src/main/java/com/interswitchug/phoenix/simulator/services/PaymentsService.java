@@ -20,7 +20,7 @@ public class PaymentsService {
 	public String validateCustomer(PaymentRequest request) throws Exception {
 
 		String endpointUrl =  Constants.ROOT_LINK + "sente/customerValidation";
-		request.setTerminalId(Constants.MY_TERMINAL_ID);
+		request.setTerminalId(Constants.TERMINAL_ID);
 
 		SystemResponse<KeyExchangeResponse> exchangeKeys = keyExchangeService.doKeyExchange();
 
@@ -40,8 +40,8 @@ public class PaymentsService {
 	public String makePayment(PaymentRequest request) throws Exception {
 
 		String endpointUrl = Constants.ROOT_LINK + "sente/xpayment";
-        request.setTerminalId(Constants.MY_TERMINAL_ID);
 
+        request.setTerminalId(Constants.TERMINAL_ID);
 		String additionalData = request.getAmount()+"&"
 		+request.getTerminalId()+"&"
 				+request.getRequestReference()+"&"
@@ -69,7 +69,7 @@ public class PaymentsService {
 	public String fetchBalance() throws Exception {
 
 		    String endpointUrl =  Constants.ROOT_LINK +  "sente/accountBalance";
-			String request = endpointUrl +"?terminalId="+ Constants.MY_TERMINAL_ID + "&requestReference="+java.util.UUID.randomUUID();
+			String request = endpointUrl +"?terminalId="+ Constants.TERMINAL_ID + "&requestReference="+java.util.UUID.randomUUID();
 
 			SystemResponse<KeyExchangeResponse> exchangeKeys = keyExchangeService.doKeyExchange();
 

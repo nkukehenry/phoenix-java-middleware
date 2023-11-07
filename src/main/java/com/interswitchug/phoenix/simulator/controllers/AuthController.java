@@ -5,6 +5,7 @@ import com.interswitchug.phoenix.simulator.dto.KeyExchangeResponse;
 import com.interswitchug.phoenix.simulator.dto.SystemResponse;
 import com.interswitchug.phoenix.simulator.services.KeyExchangeService;
 import com.interswitchug.phoenix.simulator.services.RegistrationService;
+import com.interswitchug.phoenix.simulator.utils.Constants;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ public class AuthController {
     public AuthController(RegistrationService registrationService, KeyExchangeService keyExchangeService) {
         this.registrationService = registrationService;
         this.keyExchangeService = keyExchangeService;
+
     }
 
     @GetMapping("/generateKeys")
@@ -35,6 +37,11 @@ public class AuthController {
     @GetMapping("/keyExchange")
     public SystemResponse<KeyExchangeResponse> keyExchange() throws Exception {
         return keyExchangeService.doKeyExchange();
+    }
+
+    @GetMapping("/test")
+    public String test() throws Exception {
+        return Constants.MY_SERIAL_ID;
     }
 
 }
