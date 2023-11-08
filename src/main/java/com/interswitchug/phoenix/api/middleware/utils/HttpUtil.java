@@ -26,8 +26,8 @@ public class HttpUtil {
 	public static String postHTTPRequest( String resourceUrl, Map<String, String> headers,
 			String data) throws Exception {
 
-		System.out.println("http outgoing request body {} "+data);
-		System.out.println("http outgoing request url {} "+resourceUrl);
+		System.out.println("http outgoing phoenix request body {} "+data);
+		System.out.println("http outgoing phoenix request url {} "+resourceUrl);
 		
 		StringBuilder resposeString = new StringBuilder();
 		CloseableHttpClient client = HttpClients.custom()
@@ -57,14 +57,14 @@ public class HttpUtil {
 		}
 		client.close();
 		System.out.println("http response code {} "+responseCode);
-		System.out.println("http response body {} "+resposeString);
+		System.out.println("http phoenix response body {} "+resposeString);
 		return resposeString.toString();
 	}
 	
 	public static String getHTTPRequest( String resourceUrl, Map<String, String> headers) throws Exception {
 
 
-		System.out.println("http outgoing request url {} "+resourceUrl);
+		System.out.println("http outgoing phoenix request url {} "+resourceUrl);
 		
 		 CloseableHttpClient client = HttpClients
 				    .custom()
@@ -93,7 +93,7 @@ public class HttpUtil {
 		}
 	    client.close();
 		System.out.println("http response code {} "+responseCode);
-		System.out.println("http response body {} "+resposeString);
+		System.out.println("http phoenix response body {} "+resposeString);
 		return resposeString.toString();
 	}
 
