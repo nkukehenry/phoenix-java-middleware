@@ -11,5 +11,5 @@ This is java integration to that Phoenix API, it can be run standalone as a micr
 # A keyExchange call is a must daily or before each transaction, this is already catered for if your are using the jar as is
 
 <hr>
-# SOME ENDPOINTS ARE NOT IMPLEMENTED IN THIS SAMPLE, BE SURE TO SEEK SUPPORT ABOUT THOSE IF YOU HIT ANY BROKERS
+# SOME ENDPOINTS ARE NOT IMPLEMENTED IN THIS SAMPLE, BE SURE TO SEEK SUPPORT ABOUT THOSE IF YOU HIT ANY BLOCKERS
 
