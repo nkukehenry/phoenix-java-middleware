@@ -6,7 +6,7 @@ This is java integration to that Phoenix API, it can be run standalone as a micr
 - A successful run exposes a Rest API, check Posman colection for details
 - Endpoints Expsed by this implementation:
    - Generate keys: localhost:8081/isw/auth/generateKeys
-   - Register Client: localhost:8081/isw/auth/generateKeys
+   - Register Client: localhost:8081/isw/auth/registerClient
    - Key Exchange:  localhost:8081/isw/auth/keyExchange
    - Validate Account: localhost:8081/isw/payments/validation
    - Payment: localhost:8081/isw/payments/pay
