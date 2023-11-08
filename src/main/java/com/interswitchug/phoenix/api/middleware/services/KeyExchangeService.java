@@ -49,7 +49,7 @@ public class KeyExchangeService {
 
 			return keyxchangeResponse;
 		} else {
-			keyxchangeResponse.setResponseMessage(keyxchangeResponse.getResponseMessage() + " during Key Exchange");
+			keyxchangeResponse.setResponseMessage(keyxchangeResponse.getResponseMessage() + " during Key Exchange, check that you are using correct credentials");
 			return keyxchangeResponse;
 		}
 	}
