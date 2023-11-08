@@ -1,5 +1,5 @@
 # phoenix-java-middleware
-This is java integration to that Phoenix API, it can be run standalone as a microservice/middleware for calling the Interswitch Ugand aPhoenix API.
+This is a java integration to the Phoenix API, it can be run standalone as a microservice/middleware for calling the Interswitch Ugand aPhoenix API.
 # How to run
 - The /dis folder contains a jar for those that can't afford going through the build process or want a quick run.
 - Start.bat contains the command required to run the jar, run start.bat in an elevated cmd or simply copy the command and run it as you please with priviledges.
