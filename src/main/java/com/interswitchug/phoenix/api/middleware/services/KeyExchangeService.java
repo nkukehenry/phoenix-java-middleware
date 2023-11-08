@@ -48,8 +48,10 @@ public class KeyExchangeService {
 						.setAuthToken(CryptoUtils.decryptWithPrivate(keyxchangeResponse.getResponse().getAuthToken()));
 
 			return keyxchangeResponse;
-		} else
-			throw new SystemApiException(keyxchangeResponse.getResponseCode(), keyxchangeResponse.getResponseMessage());
+		} else {
+			keyxchangeResponse.setResponseMessage(keyxchangeResponse.getResponseMessage() + " during Key Exchange");
+			return keyxchangeResponse;
+		}
 	}
 
 }

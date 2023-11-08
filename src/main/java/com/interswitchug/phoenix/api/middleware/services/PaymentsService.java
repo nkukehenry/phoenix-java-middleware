@@ -34,7 +34,7 @@ public class PaymentsService {
 			return HttpUtil.postHTTPRequest(endpointUrl, headers, jsonString);
 		}
 		else{
-			return "Cannot Continue with inquiry,Key Exchange failed";
+			return JSONDataTransform.marshall(exchangeKeys);
 		}
 
 	}
@@ -61,8 +61,7 @@ public class PaymentsService {
 			return  HttpUtil.postHTTPRequest(endpointUrl, headers, JSONDataTransform.marshall(request));
 		}
 		else{
-
-			return "Cannot Continue with payment,Key Exchange failed";
+			return JSONDataTransform.marshall(exchangeKeys);
 		}
 
 	}
