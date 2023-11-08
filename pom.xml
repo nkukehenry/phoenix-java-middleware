@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.interswitchug</groupId>
-	<artifactId>phoenix.simulator</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>phoenix.simulator</name>
+	<artifactId>phoenix-api-middleware</artifactId>
+	<version>1.0.0</version>
+	<name>phoenix-api-middleware</name>
 	<description>Simple middleware to help you easily integrate with the Phoenix API</description>
 	<properties>
 		<major.version>1</major.version>
@@ -19,14 +19,9 @@
 		<patch.version>0</patch.version>
 		<maven.build.timestamp.format>yyMMddHHmm</maven.build.timestamp.format>
 		<commons.logging.version>1.2</commons.logging.version>
-		<jdk-version>1.8</jdk-version>
-		<maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
-		<maven-bundle-plugin-version>3.3.0</maven-bundle-plugin-version>
-		<build-plugins-plugin-version>2.5</build-plugins-plugin-version>
-		<build-helper-plugin-version>1.7</build-helper-plugin-version>
-		<maven.compiler.source>1.8</maven.compiler.source>
 		<jackson.version>2.13.0</jackson.version>
 		<release.note>Simple</release.note>
+		<start-class>com.interswitchug.phoenix.api.middleware.PhoenixSimulatorApplication</start-class>
 	</properties>
 
 	<dependencies>
@@ -88,83 +83,11 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin-version}</version>
-				<configuration>
-					<source>${jdk-version}</source>
-					<target>${jdk-version}</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<index>true</index>
-						<manifestEntries>
-							<URL>${project.url}</URL>
-							<Release-Notes>${release.note}</Release-Notes>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>${maven-bundle-plugin-version}</version>
-				<extensions>true</extensions>
-				<configuration>
-					<manifestLocation>META-INF</manifestLocation>
-				</configuration>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-antrun-plugin
-										</artifactId>
-										<versionRange>
-											[1.3,)
-										</versionRange>
-										<goals>
-											<goal>run</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 </project>
