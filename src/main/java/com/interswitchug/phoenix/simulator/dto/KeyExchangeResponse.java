@@ -1,6 +1,9 @@
 package com.interswitchug.phoenix.simulator.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class KeyExchangeResponse   {
 	private String authToken;
 	private String serverSessionPublicKey;

@@ -3,14 +3,17 @@ package com.interswitchug.phoenix.simulator.config;
 
 import com.interswitchug.phoenix.simulator.utils.Constants;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Config {
+
+
     @Value("${app.terminal_id}")
     public  String terminalId;
     @Value("${app.client_id}")
-    public  String clientId;
+    public   String clientId;
     @Value("${app.client_secret}")
     public  String clientSecret;
     @Value("${app.password}")
@@ -19,26 +22,30 @@ public class Config {
     public  String serialId;
     @Value("${app.public_key}")
     public  String publicKey;
-    @Value("${app.privateKey}")
+    @Value("${app.private_key}")
     public  String privateKey;
     @Value("${app.base_url}")
     public  String baseUrl;
     @Value("${app.version}")
     public  String appVersion;
 
-    public Config() {
 
-        Constants.CLIENT_SECRET = clientSecret;
-        Constants.CLIENT_ID = clientId;
-        Constants.ROOT_LINK = baseUrl;
-        Constants.SANDBOX_ROUTE = baseUrl;
-        Constants.PRIKEY = privateKey;
-        Constants.PUBKEY = publicKey;
-        Constants.TERMINAL_ID=terminalId;
-        Constants.ACCOUNT_PWD = password;
-        Constants.APP_VERSION = appVersion;
-        Constants.MY_SERIAL_ID = serialId;
+    @Bean
+    public Constants getServiceConstants(){
 
+        Constants constants = new Constants();
+
+        constants.CLIENT_SECRET = clientSecret;
+        constants.CLIENT_ID = clientId;
+        constants.ROOT_LINK = baseUrl;
+        constants.SANDBOX_ROUTE = baseUrl;
+        constants.PRIKEY = privateKey;
+        constants.PUBKEY = publicKey;
+        constants.TERMINAL_ID=terminalId;
+        constants.ACCOUNT_PWD = password;
+        constants.APP_VERSION = appVersion;
+        constants.MY_SERIAL_ID = serialId;
+
+        return constants;
     }
-
 }

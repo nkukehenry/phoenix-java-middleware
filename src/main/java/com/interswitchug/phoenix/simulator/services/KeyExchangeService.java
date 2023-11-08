@@ -10,6 +10,7 @@ import java.util.Map;
 @Service
 public class KeyExchangeService {
 
+
 	public SystemResponse<KeyExchangeResponse> doKeyExchange() throws Exception {
 
 		String endpointUrl = Constants.ROOT_LINK + "client/doKeyExchange";

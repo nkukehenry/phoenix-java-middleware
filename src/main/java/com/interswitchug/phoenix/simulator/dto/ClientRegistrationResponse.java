@@ -13,12 +13,10 @@ public class ClientRegistrationResponse implements Serializable{
 	private static final long serialVersionUID = 2922295347736640220L;
 	private String transactionReference;
 	private String authToken;
+
 	private String serverSessionPublicKey;
-	
-	
-	
-	
-	
+
+
 
 	public String getServerSessionPublicKey() {
 		return serverSessionPublicKey;
@@ -38,6 +36,6 @@ public class ClientRegistrationResponse implements Serializable{
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
 	}
-	
-	
+
+
 }

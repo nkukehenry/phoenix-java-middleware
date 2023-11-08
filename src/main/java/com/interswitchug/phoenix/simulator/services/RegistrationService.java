@@ -3,6 +3,7 @@ package com.interswitchug.phoenix.simulator.services;
 import com.interswitchug.phoenix.simulator.dto.*;
 import com.interswitchug.phoenix.simulator.utils.*;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
@@ -11,10 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class RegistrationService {
-
-	 private final String registrationEndpointUrl = Constants.ROOT_LINK + "client/clientRegistration";
-	 private final String registrationCompletionEndpointUrl = Constants.ROOT_LINK   + "client/completeClientRegistration";
+public class RegistrationService extends  BaseService {
 
 
 	/**
@@ -52,8 +50,10 @@ public class RegistrationService {
 	     String privateKey = Constants.PRIKEY;
          String publicKey  = Constants.PUBKEY;
 
+
 		 System.out.println("privateKey IS: " + privateKey);
 		 System.out.println("publicKey IS: " + publicKey);
+		 System.out.println("URL"+ Constants.ROOT_LINK);
 
 		 System.out.println(" private key {} "+ privateKey);
 		 System.out.println(" public key  {} " + publicKey);
@@ -96,7 +96,7 @@ public class RegistrationService {
 				   if(response.getResponse().getClientSecret() != null  && response.getResponse().getClientSecret().length() > 5) {
 
 					   String clientSecret = CryptoUtils.decryptWithPrivate(response.getResponse().getClientSecret() ,privateKey);
-					   //LOG.info("New ClientSecret: {}", clientSecret);
+					   System.out.println("New ClientSecret: " +clientSecret);
 						//return the New secret
 					   return "Sucessful, New Client Secret: " + clientSecret;
 				   }
@@ -114,15 +114,15 @@ public class RegistrationService {
 	 
 	 private String clientRegistrationRequest(String publicKey,String clientSessionPublicKey,String privateKey,ClientRegistrationDetail setup) throws Exception{
 
+		 String registrationEndpointUrl = Constants.ROOT_LINK + "client/clientRegistration";
+
 		 setup.setSerialId(Constants.MY_SERIAL_ID);
 		  setup.setTerminalId(Constants.TERMINAL_ID);
 		  setup.setPublicKey(publicKey);
 		  setup.setGprsCoordinate("");
 		  setup.setClientSessionPublicKey(clientSessionPublicKey);
-		  setup.setRequestReference(String.valueOf(new Date(System.currentTimeMillis())));
 
 		 System.out.println("Request: "+setup);
-
 
 		  Map<String,String> headers = AuthUtils.generateInterswitchAuth(Constants.POST_REQUEST, registrationEndpointUrl,"","","",privateKey);
 		  String json= JSONDataTransform.marshall(setup);
@@ -131,8 +131,10 @@ public class RegistrationService {
 	  }
 	 
 	 private String completeRegistration(String terminalKey,String authToken,String transactionReference,String otp,String privateKey) throws Exception{
-			
-		  CompleteClientRegistration completeReg= new CompleteClientRegistration();
+
+		 String registrationCompletionEndpointUrl = Constants.ROOT_LINK   + "client/completeClientRegistration";
+
+		 CompleteClientRegistration completeReg= new CompleteClientRegistration();
 
 		  String passwordHash = UtilMethods.hash512(Constants.ACCOUNT_PWD);
 		  completeReg.setTerminalId(Constants.TERMINAL_ID);
@@ -150,4 +152,6 @@ public class RegistrationService {
 
 		  return HttpUtil.postHTTPRequest( registrationCompletionEndpointUrl, headers, json);
 	 }
+
+
 }

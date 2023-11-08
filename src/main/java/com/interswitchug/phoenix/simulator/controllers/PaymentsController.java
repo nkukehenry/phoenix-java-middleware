@@ -2,7 +2,9 @@ package com.interswitchug.phoenix.simulator.controllers;
 
 
 import com.interswitchug.phoenix.simulator.dto.PaymentRequest;
+import com.interswitchug.phoenix.simulator.services.BaseService;
 import com.interswitchug.phoenix.simulator.services.PaymentsService;
+import com.interswitchug.phoenix.simulator.utils.AuthUtils;
 import com.interswitchug.phoenix.simulator.utils.Constants;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +17,7 @@ public class PaymentsController {
 
     private PaymentsService paymentsService;
 
-    public PaymentsController(PaymentsService paymentsService, Constants appConstants) {
+    public PaymentsController(PaymentsService paymentsService) {
         this.paymentsService = paymentsService;
     }
 
