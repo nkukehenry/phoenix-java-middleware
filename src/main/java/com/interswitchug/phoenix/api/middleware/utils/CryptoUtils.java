@@ -63,12 +63,15 @@ public class CryptoUtils {
 
 	public static String decryptWithPrivate(String plaintext) throws SystemApiException {
 		try {
+
 			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
 			byte[] message = Base64.decodeBase64(plaintext);
 			Cipher cipher = Cipher.getInstance(Constants.RSA_NONE_OAEPWithSHA256AndMGF1Padding, "BC");
 			cipher.init(Cipher.DECRYPT_MODE, getRSAPrivate());
 			byte[] secret = cipher.doFinal(message);
 			return new String(secret);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			//LOG.error("Exception trace {} ", ExceptionUtils.getStackTrace(e));

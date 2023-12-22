@@ -17,6 +17,7 @@ public class Constants {
     public static  String APP_VERSION="";
     public static  String SANDBOX_ROUTE="";
     public static  String ROOT_LINK= SANDBOX_ROUTE;
+    public static  String BILLERS_ROOT= "";
 	public static final String TIMESTAMP = "Timestamp";
     public static final String NONCE = "Nonce";
     public static final String SIGNATURE = "Signature";

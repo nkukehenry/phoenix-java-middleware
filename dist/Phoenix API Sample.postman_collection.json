@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5d68d025-2027-4945-a12e-07351895e3d3",
+		"_postman_id": "4cc1eb0d-fd8b-4b47-b8ce-d5d25ce9df1d",
 		"name": "Phoenix API Sample",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "4288093"
@@ -128,6 +128,124 @@
 						"isw",
 						"payments",
 						"pay"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transaction Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/isw/payments/checkStatus?requestReference=0589585",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"isw",
+						"payments",
+						"checkStatus"
+					],
+					"query": [
+						{
+							"key": "requestReference",
+							"value": "0589585"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Biller Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/isw/payments/billerCategories",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"isw",
+						"payments",
+						"billerCategories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Billers By Category Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/isw/payments/categoryBillers?categoryId=10",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"isw",
+						"payments",
+						"categoryBillers"
+					],
+					"query": [
+						{
+							"key": "categoryId",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Payment Items By Biller Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/isw/payments/billerItems?billerId=23",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"isw",
+						"payments",
+						"billerItems"
+					],
+					"query": [
+						{
+							"key": "billerId",
+							"value": "23"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Wallet Balance",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8081/isw/payments/balance",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"isw",
+						"payments",
+						"balance"
 					]
 				}
 			},

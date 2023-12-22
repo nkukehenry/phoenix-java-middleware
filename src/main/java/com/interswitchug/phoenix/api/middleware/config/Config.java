@@ -29,6 +29,11 @@ public class Config {
     @Value("${app.version}")
     public  String appVersion;
 
+    @Value("${app.billers_base_url}")
+    public  String billerBaseUrl;
+
+
+
 
     @Bean
     public Constants getServiceConstants(){
@@ -45,6 +50,7 @@ public class Config {
         constants.ACCOUNT_PWD = password;
         constants.APP_VERSION = appVersion;
         constants.MY_SERIAL_ID = serialId;
+        constants.BILLERS_ROOT = billerBaseUrl;
 
         return constants;
     }
