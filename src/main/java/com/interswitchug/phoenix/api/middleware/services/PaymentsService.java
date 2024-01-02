@@ -30,9 +30,6 @@ public class PaymentsService {
 			Map<String,String> headers = AuthUtils.generateInterswitchAuth(Constants.POST_REQUEST, endpointUrl, "",
 					exchangeKeys.getResponse().getAuthToken(),exchangeKeys.getResponse().getTerminalKey());
 
-			if(request.getOtp() != null)
-				request.setOtp(CryptoUtils.encrypt(request.getOtp(),exchangeKeys.getResponse().getTerminalKey()));
-
 			String jsonString = JSONDataTransform.marshall(request);
 			return HttpUtil.postHTTPRequest(endpointUrl, headers, jsonString);
 		}
@@ -58,6 +55,10 @@ public class PaymentsService {
 
 			String authToken   = exchangeKeys.getResponse().getAuthToken();
 			String sessionKey  = exchangeKeys.getResponse().getTerminalKey();
+
+
+			if(request.getOtp() != null)
+				request.setOtp(CryptoUtils.encrypt(request.getOtp(),exchangeKeys.getResponse().getTerminalKey()));
 
 			Map<String,String> headers = AuthUtils.generateInterswitchAuth(Constants.POST_REQUEST, endpointUrl, additionalData,
 					authToken,sessionKey);
