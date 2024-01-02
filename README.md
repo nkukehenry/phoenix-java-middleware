@@ -10,6 +10,11 @@ This is a java integration to the Phoenix API, it can be run standalone as a mic
    - Key Exchange:  localhost:8081/isw/auth/keyExchange
    - Validate Account: localhost:8081/isw/payments/validation
    - Payment: localhost:8081/isw/payments/pay
+   - Get Wallet Balance:  localhost:8081/isw//payments/balance
+   - Check Transaction Status:  localhost:8081/isw/payments/checkStatus?requestReference={requestReference}
+   - Get Biller Categories:  localhost:8081/isw/payments/billerCategories
+   - Get  Category Billers:  localhost:8081/isw/payments/categoryBillers?categoryId={categoryId}
+   - Get  Biller Items:  localhost:8081/isw/payments/billerItems?billerId={billerId}
 
 # Remember to update your credentials in application.properties
 
