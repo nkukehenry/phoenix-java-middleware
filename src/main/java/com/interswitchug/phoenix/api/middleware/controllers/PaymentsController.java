@@ -55,7 +55,7 @@ public class PaymentsController {
     @GetMapping("/billerItems")
     public String getPaymentItemsByBiller(@PathParam("billerId") String billerId) throws Exception {
 
-        return paymentsService.getCategoryBillers(billerId);
+        return paymentsService.getBillerItems(billerId);
     }
 
 }
