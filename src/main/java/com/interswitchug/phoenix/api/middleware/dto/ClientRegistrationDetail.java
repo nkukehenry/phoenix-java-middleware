@@ -13,6 +13,7 @@ public class ClientRegistrationDetail extends ClientTerminalRequest{
 	private String ownerPhoneNumber;
 	private String publicKey;
 	private String clientSessionPublicKey;
+	private String requestReference;
 	
 	
 	public String getClientSessionPublicKey() {
