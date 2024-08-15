@@ -20,6 +20,7 @@ public class PaymentRequest extends PaymentsTerminalRequest {
 	private String otp;
 	private String currencyCode;
 	private CardData cardData;
+	private String requestReference;
 	
 	
 		
