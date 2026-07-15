@@ -23,6 +23,9 @@ public class PaymentsService {
 
 		String endpointUrl =  Constants.ROOT_LINK + "sente/customerValidation";
 		request.setTerminalId(Constants.TERMINAL_ID);
+		if(com.interswitchug.phoenix.api.middleware.utils.UtilMethods.isEmptyString(request.getRequestReference())) {
+			request.setRequestReference(java.util.UUID.randomUUID().toString());
+		}
 
 		SystemResponse<KeyExchangeResponse> exchangeKeys = keyExchangeService.doKeyExchange();
 
@@ -44,6 +47,9 @@ public class PaymentsService {
 		String endpointUrl = Constants.ROOT_LINK + "sente/xpayment";
 
         request.setTerminalId(Constants.TERMINAL_ID);
+		if(com.interswitchug.phoenix.api.middleware.utils.UtilMethods.isEmptyString(request.getRequestReference())) {
+			request.setRequestReference(java.util.UUID.randomUUID().toString());
+		}
 		String additionalData = request.getAmount()+"&"
 		+request.getTerminalId()+"&"
 				+request.getRequestReference()+"&"

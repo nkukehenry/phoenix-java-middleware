@@ -1,26 +1,260 @@
-# phoenix-java-middleware
-This is a java integration to the Phoenix API, it can be run standalone as a microservice/middleware for calling the Interswitch Ugand aPhoenix API.
-# How to run (Make sure you're using openjdk)
-- The /dis folder contains a jar for those that can't afford going through the build process or want a quick run.
-- Start.bat contains the command required to run the jar, run start.bat in an elevated cmd or simply copy the command and run it as you please with priviledges.
-- A successful run exposes a Rest API, check Posman colection for details
-- Endpoints Expsed by this implementation:
-   - Generate keys: localhost:8081/isw/auth/generateKeys
-   - Register Client: localhost:8081/isw/auth/registerClient
-   - Key Exchange:  localhost:8081/isw/auth/keyExchange
-   - Validate Account: localhost:8081/isw/payments/validation
-   - Payment: localhost:8081/isw/payments/pay
-   - Get Wallet Balance:  localhost:8081/isw//payments/balance
-   - Check Transaction Status:  localhost:8081/isw/payments/checkStatus?requestReference={requestReference}
-   - Get Biller Categories:  localhost:8081/isw/payments/billerCategories
-   - Get  Category Billers:  localhost:8081/isw/payments/categoryBillers?categoryId={categoryId}
-   - Get  Biller Items:  localhost:8081/isw/payments/billerItems?billerId={billerId}
+# Phoenix API Java Middleware
 
-# Remember to update your credentials in application.properties
+A Spring Boot middleware for the **Interswitch Uganda Phoenix (QuickTeller) API**. Run it as a local microservice and let it handle the heavy crypto/authentication work so your downstream applications can integrate with simple JSON REST calls.
 
-# A new client secret is issued after completing registration successfully, update the client Secret again at this point
-# A keyExchange call is a must daily or before each transaction, this is already catered for if your are using the jar as is
+## What this middleware does
 
-<hr>
-# SOME ENDPOINTS ARE NOT IMPLEMENTED IN THIS SAMPLE, BE SURE TO SEEK SUPPORT ABOUT THOSE IF YOU HIT ANY BLOCKERS
+The Phoenix API requires several security operations on every request. This middleware automates them for you:
 
+- Generates and stores the RSA key pair used for signing and decryption.
+- Creates the `Authorization`, `Timestamp`, `Nonce`, `Signature`, and `AuthToken` headers required by Interswitch.
+- Performs ECDH key exchange and derives the per-session AES key.
+- Encrypts sensitive fields (OTP, PIN, password) with the session key before sending them upstream.
+- Refreshes the session automatically before each payment call, so you do not have to manage `keyExchange` yourself.
+
+```
+Your app  ──►  localhost:8081  ──►  Interswitch Phoenix API
+                    ▲
+            RSA/ECDH/AES handled here
+```
+
+## Prerequisites
+
+- OpenJDK 17+ (required by Spring Boot 3.1.x)
+- Maven 3.8+
+- A valid set of Interswitch-issued credentials:
+  - `client_id` and `client_secret`
+  - `terminal_id`, `serial_id`, and terminal `password`
+
+> The default configuration points to the Interswitch **dev/sandbox** environment.
+
+## Build & run
+
+A convenience script builds the project and copies the JAR to a `dist/` folder:
+
+```bash
+# Linux / macOS / WSL
+./scripts/release.sh
+java -jar dist/phoenix-api-middleware-1.0.0.jar
+```
+
+Or build manually with Maven:
+
+```bash
+mvn clean package
+java -jar target/phoenix-api-middleware-1.0.0.jar
+```
+
+You can also run directly from source:
+
+```bash
+mvn spring-boot:run
+```
+
+For Windows users without a shell, use:
+
+```cmd
+mvn clean package
+java -jar target\phoenix-api-middleware-1.0.0.jar
+```
+
+> **Legacy quick start:** A prebuilt JAR and `dist/start.bat` are still present in `dist/` from earlier releases. You can run that JAR directly, but building from source with `scripts/release.sh` is the recommended and supported path.
+
+The service starts on port `8081` (configured in `application.properties`).
+
+## Configuration
+
+All runtime credentials live in `src/main/resources/application.properties`. An annotated example file is provided at [`application.properties.example`](src/main/resources/application.properties.example).
+
+| Property               | Description                                                               | How it is obtained                                    |
+| ---------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `app.base_url`         | Phoenix API base URL                                                      | Interswitch environment URL (dev URL is the default)  |
+| `app.billers_base_url` | Biller management base URL                                                | Interswitch environment URL                           |
+| `app.client_id`        | API client identifier                                                     | Issued by Interswitch                                 |
+| `app.client_secret`    | API client secret                                                         | Issued by Interswitch; updated after registration     |
+| `app.terminal_id`      | Terminal / merchant ID                                                    | Issued by Interswitch                                 |
+| `app.serial_id`        | Device serial ID or an arbitrary value used consistently across calls    | Agreed with Interswitch or self-assigned              |
+| `app.password`         | Terminal password (plain text; hashed internally before sending)          | Set during registration                               |
+| `app.public_key`       | Base64 RSA public key used for signing and encryption                     | Generated by the middleware or supplied by you        |
+| `app.private_key`      | Base64 RSA private key matching `app.public_key`                           | Generated by the middleware; keep secret              |
+| `app.version`          | Application version string                                                | Your own versioning                                   |
+
+### Overriding values via environment variables
+
+You can override any `application.properties` value with an environment variable using Spring Boot relaxed binding. For example:
+
+```bash
+APP_CLIENT_SECRET="new-secret-from-registration" \
+APP_BASE_URL="https://prod.interswitch.io/api/v1/phoenix/" \
+java -jar target/phoenix-api-middleware-1.0.0.jar
+```
+
+This lets you inject secrets from a vault, CI/CD pipeline, or cloud secret manager.
+
+## Partner integration flow
+
+Follow these steps the first time you connect to Phoenix:
+
+1. **Generate an RSA key pair**
+   ```bash
+   curl http://localhost:8081/isw/auth/generateKeys
+   ```
+   Save the returned `publicKey` and `privateKey` into `app.public_key` and `app.private_key` in `application.properties`.
+
+2. **Register the client**
+   ```bash
+   curl -X POST http://localhost:8081/isw/auth/registerClient \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "Principal Admin",
+       "phoneNumber": "2567XXXXXXXX",
+       "ownerPhoneNumber": "2567XXXXXXXX",
+       "nin": "CM...",
+       "emailAddress": "admin@example.com",
+       "gender": "M"
+     }'
+   ```
+   The middleware performs both `clientRegistration` and `completeClientRegistration` automatically. If successful, it returns a **new `client_secret`**.
+
+3. **Update `app.client_secret`** in `application.properties` (or set `APP_CLIENT_SECRET`) with the value returned in step 2.
+
+4. **Start transacting** using the payment endpoints below. The middleware will run `keyExchange` automatically before each upstream request.
+
+5. **(Optional) Test the auth flow manually**
+   ```bash
+   curl http://localhost:8081/isw/auth/keyExchange
+   ```
+
+## API reference
+
+All paths are relative to `http://localhost:8081`.
+
+| Method | Endpoint | Description | Body / query params |
+| ------ | -------- | ----------- | ------------------- |
+| `GET`  | `/isw/auth/generateKeys` | Generates a new RSA key pair | — |
+| `POST` | `/isw/auth/registerClient` | Registers/activates the client and completes the flow | `ClientRegistrationDetail` JSON |
+| `GET`  | `/isw/auth/keyExchange` | Performs a manual key exchange | — |
+| `POST` | `/isw/payments/validation` | Validates a customer/account before payment | `PaymentRequest` JSON |
+| `POST` | `/isw/payments/pay` | Sends a payment notification (`xpayment`) | `PaymentRequest` JSON |
+| `GET`  | `/isw/payments/checkStatus` | Checks the status of a previous transaction | `requestReference` query param |
+| `GET`  | `/isw/payments/balance` | Fetches the wallet/account balance | — |
+| `GET`  | `/isw/payments/billerCategories` | Lists biller categories | — |
+| `GET`  | `/isw/payments/categoryBillers` | Lists billers in a category | `categoryId` query param |
+| `GET`  | `/isw/payments/billerItems` | Lists payment items for a biller | `billerId` query param |
+
+The middleware will generate a `requestReference` UUID automatically if you do not provide one.
+
+## Sample requests
+
+### Validate a customer
+
+```bash
+curl -X POST http://localhost:8081/isw/payments/validation \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymentCode": 12345678901,
+    "customerId": "7724XXXXX",
+    "amount": 10000,
+    "phoneNumber": "2567XXXXXXXX"
+  }'
+```
+
+### Make a payment
+
+```bash
+curl -X POST http://localhost:8081/isw/payments/pay \
+  -H "Content-Type: application/json" \
+  -d '{
+    "paymentCode": 12345678901,
+    "customerId": "7724XXXXX",
+    "amount": 10000,
+    "phoneNumber": "2567XXXXXXXX",
+    "otp": "123456"
+  }'
+```
+
+### Check transaction status
+
+```bash
+curl "http://localhost:8081/isw/payments/checkStatus?requestReference=1a2b3c4d"
+```
+
+A more complete set of requests is available in the Postman collection: [`Phoenix API Sample.postman_collection.json`](Phoenix API Sample.postman_collection.json).
+
+## Webhooks / callbacks
+
+This middleware does **not** currently expose a callback receiver. Your application must expose an HTTPS endpoint where Interswitch can post transaction-completion events.
+
+Each webhook request includes an `X-Signature` header. Verify it before trusting the payload:
+
+1. Build the signature payload string: `retrievalReference + amount + customerId`
+   - `amount` must be formatted to exactly one decimal place, e.g. `14000.0`.
+2. Compute `Base64(HMAC-SHA512(payload, sharedSecret))`.
+3. Compare the result with the `X-Signature` header using a constant-time comparison.
+4. Respond with HTTP `200 OK` to acknowledge receipt.
+
+Example Java verification:
+
+```java
+public static boolean isSignatureValid(String payload, String incomingSignature, String key) {
+    try {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA512");
+        Mac mac = Mac.getInstance("HmacSHA512");
+        mac.init(secretKey);
+        byte[] calculated = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+        byte[] incoming = Base64.getDecoder().decode(incomingSignature);
+        return MessageDigest.isEqual(calculated, incoming);
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to verify HMAC", e);
+    }
+}
+```
+
+See the **Phoenix Callbacks/Webhooks Guide** and **Phoenix API Integration Specification** provided by the Interswitch technical team for the full payload specification and code samples.
+
+## Common response codes
+
+| Code   | Meaning |
+| ------ | ------- |
+| `90000` | Transaction approved |
+| `90009` | Request in progress — query status later |
+| `90020` | Transaction declined by biller |
+| `90026` | Duplicate request reference |
+| `90030` | Format error |
+| `90051` | Insufficient funds |
+| `90052` | Account / customer not found |
+| `90054` | Expired PIN/OTP/Token |
+| `90055` | Wrong PIN or OTP |
+| `90061` | Exceeds withdrawal limit |
+| `90063` | Authorization error (often a signature issue) |
+| `90091` | Remote system temporarily unavailable |
+| `90096` | An error occurred |
+| `70038` | Data not found |
+| `70010` | Biller not found |
+
+The full list is in the **Phoenix API Integration Specification** provided by the Interswitch technical team.
+
+## Security notes
+
+- `app.private_key` is the root of trust. Store it securely and never expose it in logs or version control.
+- Do not commit real credentials. Use `application.properties.example` as a template and load secrets from environment variables or a secret manager.
+- After a successful registration, the returned `client_secret` replaces the initial value in all subsequent requests.
+- Rotate keys periodically according to your security policy.
+
+## Troubleshooting
+
+| Problem | Likely cause | What to check |
+| ------- |  | ------------- |
+| `90063 Authorization error` | Invalid signature or wrong RSA keys | Ensure `app.public_key` and `app.private_key` are a matching pair and were copied correctly after `/generateKeys`. |
+| `keyExchange` fails | Wrong `client_secret`, `terminal_id`, `password`, or `serial_id` | Check the logs and verify the credentials issued by Interswitch. |
+| Duplicate request reference (`90026` / `70018`) | `requestReference` reused | Let the middleware generate a UUID, or always use unique references. |
+| Pending transaction (`90009`) | Delayed transaction | Call `/isw/payments/checkStatus` after a short delay. |
+| Webhook signature mismatch | Amount formatting or wrong shared secret | Make sure the amount has exactly one decimal place and you are using the shared secret issued by Interswitch. |
+
+## Notes & known quirks
+
+- Some endpoints are not implemented in this sample. If you hit a blocker for an unimplemented flow, contact Interswitch support.
+- `pom.xml` declares `httpclient` twice. This is a known duplicate dependency; do not add a third declaration.
+- The upstream API documentation is available at:
+  https://dev.interswitch.io/docs/
+- For compliance-related remittance fields, see the **Compliance Data Values Guide** provided by the Interswitch technical team.

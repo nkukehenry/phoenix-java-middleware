@@ -1,0 +1,42 @@
+server.port = 8081
+
+# ---------------------------------------------------------------------------
+# Copy this file to application.properties and replace every placeholder.
+# Never commit real credentials to version control.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Interswitch environment endpoints
+# ---------------------------------------------------------------------------
+# Development / sandbox URL. In production change this to the live URL.
+app.base_url=https://dev.interswitch.io/api/v1/phoenix/
+app.billers_base_url=https://dev.interswitch.io/api/v1/phoenix/gateway/qt-api/Biller/
+
+# ---------------------------------------------------------------------------
+# API client credentials issued by Interswitch
+# ---------------------------------------------------------------------------
+app.client_id=IKIA...
+# After a successful /registerClient call, replace this with the new client_secret returned.
+app.client_secret=...
+
+# ---------------------------------------------------------------------------
+# Merchant terminal credentials issued/configured by Interswitch
+# ---------------------------------------------------------------------------
+app.terminal_id=...
+# Use a consistent value across all calls (device serial id or versioned API id).
+app.serial_id=...
+# Plain-text terminal password. The middleware hashes/encrypts it before sending upstream.
+app.password=...
+
+# ---------------------------------------------------------------------------
+# RSA key pair used for request signing and decryption.
+# Generate a new pair with GET /isw/auth/generateKeys, then paste the values here.
+# Keep the private key secret.
+# ---------------------------------------------------------------------------
+app.public_key=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...
+app.private_key=MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQD...
+
+# ---------------------------------------------------------------------------
+# Application metadata
+# ---------------------------------------------------------------------------
+app.version=v1

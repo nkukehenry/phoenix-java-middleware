@@ -119,6 +119,7 @@ public class RegistrationService extends  BaseService {
 		  setup.setPublicKey(publicKey);
 		  setup.setGprsCoordinate("");
 		  setup.setClientSessionPublicKey(clientSessionPublicKey);
+		  setup.setRequestReference(java.util.UUID.randomUUID().toString());
 
 		 System.out.println("Request: "+setup);
 
